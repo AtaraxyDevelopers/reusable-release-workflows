@@ -1,6 +1,6 @@
 name: Reusable package release
 on:
-  workflow_call:
+  workflow_call: null
 permissions:
   contents: write
 jobs:
@@ -19,7 +19,16 @@ jobs:
       - name: Verify tag matches package version
         env:
           RELEASE_TAG: ${{ github.ref_name }}
-        run: node scripts/check-release.mjs
+        run: |-
+          node --input-type=module <<'RELEASE_VALIDATION'
+          import fs from 'node:fs';
+          const tag = process.env.RELEASE_TAG;
+          const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
+          if (!/^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(tag ?? '') || tag !== 'v' + version) {
+            throw new Error('Release tag must match package.json version (vMAJOR.MINOR.PATCH).');
+          }
+          console.log('Release tag matches package version.');
+          RELEASE_VALIDATION
       - run: npm pack
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:

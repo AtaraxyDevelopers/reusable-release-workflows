@@ -9,7 +9,11 @@ An open-source project from [Ataraxy Developers](https://github.com/AtaraxyDevel
 
 ## Quick start
 
-Requires Node.js 22 or 24 and npm. Git is optional if you download the source ZIP.
+Install [Node.js](https://nodejs.org/en/download) 22 or 24 (npm is included). Check
+`node --version` and `npm --version` in your terminal. The commands below run from
+this repository's root folder, the one containing `package.json`.
+
+**With Git:**
 
 ```sh
 git clone https://github.com/AtaraxyDevelopers/reusable-release-workflows.git
@@ -18,15 +22,27 @@ npm ci
 npm test
 ```
 
+**Without Git:** choose **Code → Download ZIP** on GitHub, extract the archive,
+and open a terminal in the extracted `reusable-release-workflows-main` folder (release archives may
+include the version in the folder name). Run `npm ci` and `npm test` there.
+Use the **source-code ZIP**, not an npm `.tgz` package, to follow this developer walkthrough.
+The install step may need internet access; the examples run locally afterward.
+
+On Windows PowerShell, if `npm.ps1` is blocked by execution policy, use `npm.cmd`
+in place of `npm` in these commands. No execution-policy change is required.
+
 ```sh
 npm run demo
-npm run check:release -- v0.1.0
+npm run check:release -- v0.1.1
 npm pack
 ```
 
 The repository is both a reusable workflow collection and a small working package
 with chunk and uniqueBy exports. The package is not published to npm. Install a
-generated tarball locally with `npm install ./ataraxydevelopers-reusable-release-workflows-0.1.0.tgz`.
+generated tarball in a separate consumer project with
+`npm install ./ataraxydevelopers-reusable-release-workflows-0.1.1.tgz` after copying
+the tarball into that project. Run that install in the consumer folder, not this
+source checkout, so it does not add a self-dependency to the example package.
 
 ## Reuse the CI workflow
 
@@ -40,7 +56,7 @@ permissions:
   contents: read
 jobs:
   test:
-    uses: AtaraxyDevelopers/reusable-release-workflows/.github/workflows/node-ci.yml@v0.1.0
+    uses: AtaraxyDevelopers/reusable-release-workflows/.github/workflows/node-ci.yml@v0.1.1
     with:
       node-versions: '[22, 24]'
 ```
@@ -52,17 +68,48 @@ managers are outside this first release's scope.
 
 ## Reuse the release workflow
 
-Copy scripts/check-release.mjs and maintain CHANGELOG.md in the caller. Use
-the pattern in [.github/workflows/release.yml](.github/workflows/release.yml), replacing
-local workflow paths with this repository's versioned references. The release job
-requires contents:write; CI only requires contents:read. Repository policies must
-allow GitHub Actions and GitHub releases.
+The caller needs a root `package.json`, a committed `package-lock.json`, a working
+`npm test` script, and `CHANGELOG.md`. **No helper script needs to be copied.**
+Create `.github/workflows/release.yml` in that caller repository:
 
-Update package.json and its lockfile, run the tests, commit, then push a matching
-vMAJOR.MINOR.PATCH tag. The workflow validates the version, creates an npm tarball,
-uploads a workflow artifact, and attaches the tarball to a GitHub release. It does
-not publish to npm and needs no npm token. A duplicate release fails visibly rather
-than overwriting an existing release; use a new version for changed artifacts.
+```yaml
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  verify:
+    uses: AtaraxyDevelopers/reusable-release-workflows/.github/workflows/node-ci.yml@v0.1.1
+  release:
+    needs: verify
+    permissions:
+      contents: write
+    uses: AtaraxyDevelopers/reusable-release-workflows/.github/workflows/package-release.yml@v0.1.1
+```
+
+For immutable references, replace each version tag with its full commit SHA.
+The workflow checks out the caller's source, runs its tests on the supported matrix,
+validates its version, packages its source, and creates a release in the caller's
+repository. The release job needs contents:write; CI needs only contents:read.
+The caller's repository policies must allow these workflows and GitHub releases.
+
+For a real release, update package.json and the lockfile, update CHANGELOG.md, run
+the tests, and commit the changes. Then create and push the matching version tag.
+For example, after committing version 1.2.3:
+
+```sh
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Those two commands publish a tag and trigger a GitHub release; they are not part of
+the local quick start. No npm token is required and nothing is published to npm.
+An existing release is not overwritten; use a new version for changed artifacts.
+
+The [Backend Recipes caller](https://github.com/AtaraxyDevelopers/tested-backend-recipes/blob/main/.github/workflows/release.yml)
+uses this exact external workflow pattern. This is also exercised during the 0.1.1 release review.
 
 ## Scope and validation
 
@@ -70,6 +117,10 @@ This first version assumes a trusted package manifest and standard npm lifecycle
 scripts. Unit tests check package behavior and tag validation. The repository's own
 CI invokes the reusable CI workflow, and its release tag exercises the release
 workflow end to end. Action dependencies are pinned to full commit SHAs.
+
+## Expected first run
+
+The demo prints chunked and deduplicated arrays. Release validation prints `Release tag matches package version.` The pack command creates a local `.tgz` file; it does not publish anything.
 
 ## Contributing and support
 
