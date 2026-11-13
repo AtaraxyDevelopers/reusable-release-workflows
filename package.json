@@ -1,0 +1,29 @@
+{
+  "name": "@ataraxydevelopers/reusable-release-workflows",
+  "version": "0.1.0",
+  "description": "Reusable GitHub Actions workflows with a working Node.js package and release validation.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "author": "Ataraxy Developers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtaraxyDevelopers/reusable-release-workflows.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AtaraxyDevelopers/reusable-release-workflows/issues"
+  },
+  "scripts": {
+    "test": "node --test",
+    "demo": "node examples/demo.mjs",
+    "check:release": "node scripts/check-release.mjs"
+  },
+  "exports": "./src/index.mjs",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ]
+}

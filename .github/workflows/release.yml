@@ -1,0 +1,14 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  verify:
+    uses: ./.github/workflows/node-ci.yml
+  release:
+    needs: verify
+    permissions:
+      contents: write
+    uses: ./.github/workflows/package-release.yml
