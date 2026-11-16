@@ -1,3 +1,5 @@
+<p><a href="https://ataraxydevelopers.com"><img src="docs/brand/ataraxy-developers-logo.png" alt="Ataraxy Developers — Turning Digital Visions Into Reality" width="520"></a></p>
+
 # Reusable Release Workflows
 
 [![CI](https://github.com/AtaraxyDevelopers/reusable-release-workflows/actions/workflows/ci.yml/badge.svg)](https://github.com/AtaraxyDevelopers/reusable-release-workflows/actions/workflows/ci.yml)

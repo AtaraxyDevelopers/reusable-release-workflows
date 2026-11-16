@@ -1,6 +1,6 @@
 {
   "name": "@ataraxydevelopers/reusable-release-workflows",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Reusable GitHub Actions workflows with a working Node.js package and release validation.",
   "type": "module",
   "engines": {
@@ -24,6 +24,8 @@
   "files": [
     "src",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "docs/brand",
+    "BRANDING.md"
   ]
 }

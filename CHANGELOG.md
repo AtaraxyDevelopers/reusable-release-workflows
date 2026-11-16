@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 — 2026-11-16
+
+Use the original, approved Ataraxy Developers logo and document its source. Include the official artwork with the README and downloadable source.
+
 ## 0.1.1 — 2026-11-13
 
 Make release validation self-contained for external callers and document a complete reusable release workflow.
